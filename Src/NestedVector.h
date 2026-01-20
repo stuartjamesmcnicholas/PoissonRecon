@@ -298,9 +298,9 @@ namespace PoissonRecon
 		template< typename _T , unsigned int _Depth , unsigned int _LogSize > friend struct NestedVector;
 
 		using _DataType = NestedVector< T , Depth-1 , LogSize >;
-		static const size_t _MaxSize = ((size_t)1)<<(LogSize*(Depth+1));
-		static const size_t _Size = ((size_t)1)<<LogSize;
-		static const size_t _Mask = _MaxSize-1;
+		static size_t _MaxSize;
+		static size_t _Size;
+		static size_t _Mask;
 
 		std::mutex _mutex;
 		std::atomic< size_t > _size;

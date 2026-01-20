@@ -26,8 +26,8 @@ RE_SOURCE=Reconstruction.example.cpp
 PTD_SOURCE=PointsToDisks.cpp
 SN_SOURCE=ScaleNormals.cpp
 
-COMPILER ?= gcc
-#COMPILER ?= clang
+#COMPILER ?= gcc
+COMPILER ?= clang
 
 ifeq ($(COMPILER),gcc)
 	CFLAGS += -fopenmp -Wno-deprecated -std=c++17 -pthread -Wno-invalid-offsetof
@@ -39,10 +39,11 @@ else
 # 	CFLAGS += -fopenmp=libiomp5 -Wno-deprecated -Wno-write-strings -std=c++17 -Wno-invalid-offsetof
 # 	LFLAGS += -liomp5 -lstdc++
 	CFLAGS += -Wno-deprecated -std=c++17 -pthread -Wno-invalid-offsetof -Wno-dangling-else
-	CFLAGS += -Wno-nan-infinity-disabled
+	#CFLAGS += -Wno-nan-infinity-disabled
+	CFLAGS += -I/opt/homebrew/include/
 	LFLAGS += -lstdc++
 endif
-LFLAGS_IMG += -lz -lpng -ljpeg
+LFLAGS_IMG += -L/opt/homebrew/lib/ -lz -lpng -ljpeg
 #LFLAGS += -ljpeg -lmypng -lz
 
 CFLAGS_DEBUG = -DDEBUG -g3
