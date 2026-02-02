@@ -20,6 +20,6 @@ c++ -pthread -std=c++23 ./Src/Reconstruction.example.cpp
 
 ```
 ./a.out --verbose --samples 1000 --out native.ply
+```
 
 which does produce a mesh.
-```
