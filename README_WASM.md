@@ -15,7 +15,7 @@ Native
 ------
 
 ```
-c++ -pthread -std=c++23 ./Src/Reconstruction.example.cpp```
+c++ -pthread -std=c++23 ./Src/Reconstruction.example.cpp
 ```
 
 ```
