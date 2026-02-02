@@ -391,13 +391,14 @@ namespace PoissonRecon
 			_data.resize( oldSize + newDataCount );
 			newDataCount = 0;
 			for( unsigned int j=0 ; j<data._indices.size() ; j++ ) if( data._indices[j]!=-1 && data._indices[j]<(node_index_type)sz )
-				if( _indices[j]==-1 )
-				{
+                        {
+				if( _indices[j]==-1 ) {
 					_indices[j] = (node_index_type)oldSize + newDataCount;
 					_data[ oldSize + newDataCount ] = mergeFunctor( data._data[ data._indices[j] ] );
 					newDataCount++;
 				}
-				else _data[ _indices[j] ] += mergeFunctor( data._data[ data._indices[j] ] );
+                                else _data[ _indices[j] ] += mergeFunctor( data._data[ data._indices[j] ] );
+                        }
 		}
 
 		template< typename TargetToSourceFunctor >
@@ -445,6 +446,7 @@ namespace PoissonRecon
 			{
 				unsigned int _j = sourceToTargetFunctor( j );
 				if( _j<(node_index_type)_sz && target._indices[_j]!=-1 )
+                                {
 					if( _indices[j]==-1 )
 					{
 						_indices[j] = (node_index_type)oldSize + newDataCount;
@@ -452,6 +454,7 @@ namespace PoissonRecon
 						newDataCount++;
 					}
 					else _data[ _indices[j] ] += mergeFunctor( target._data[ target._indices[_j] ] );
+                                }
 			}
 		}
 

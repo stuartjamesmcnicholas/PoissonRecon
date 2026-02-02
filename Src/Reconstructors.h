@@ -617,18 +617,26 @@ namespace PoissonRecon
 					OutputDataStreamConverter< typename _VertexTypeConverter::InternalVertexType , typename _VertexTypeConverter::ExternalVertexType > __vertexStream( _vertexStream , _VertexTypeConverter::ConvertX2I );
 					typename LevelSetExtractor< Real , Dim , InternalAuxData >::Stats stats;
 					if constexpr( Dim==3 )
+                                        {
 						stats = LevelSetExtractor< Real , Dim , InternalAuxData >::Extract( Sigs() , UIntPack< Reconstructor::WeightDegree >() , UIntPack< DataSig >() , tree , density , _auxData , solution , isoValue , __vertexStream , faceStream , _zeroAuxData , !params.linearFit , params.outputGradients , params.forceManifold , params.polygonMesh , false );
+                                        }
 					else if constexpr( Dim==2 )
+                                            {
 						stats = LevelSetExtractor< Real , Dim , InternalAuxData >::Extract( Sigs() , UIntPack< Reconstructor::WeightDegree >() , UIntPack< DataSig >() , tree , density , _auxData , solution , isoValue , __vertexStream , faceStream , _zeroAuxData , !params.linearFit , params.outputGradients , false );
+                                            }
 					statsString = stats.toString();
 				}
 				else
 				{
 					typename LevelSetExtractor< Real , Dim >::Stats stats;
 					if constexpr( Dim==3 )
+                                        {
 						stats = LevelSetExtractor< Real , Dim >::Extract( Sigs() , UIntPack< Reconstructor::WeightDegree >() , tree , density , solution , isoValue , _vertexStream , faceStream , !params.linearFit , params.outputGradients , params.forceManifold , params.polygonMesh , false );
+                                        }
 					else if constexpr( Dim==2 )
+                                        {
 						stats = LevelSetExtractor< Real , Dim >::Extract( Sigs() , UIntPack< Reconstructor::WeightDegree >() , tree , density , solution , isoValue , _vertexStream , faceStream , !params.linearFit , params.outputGradients , false );
+                                        }
 					statsString = stats.toString();
 				}
 

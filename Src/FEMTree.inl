@@ -739,8 +739,10 @@ void FEMTree< Dim , Real >::processNeighboringLeaves( FEMTreeNode **nodes , size
 			NeighborLeafNodes neighborLeafNodes;
 			neighborKeys[t].setLeafNeighbors( nodes[i] , neighborLeafNodes );
 			for( unsigned int i=0 ; i<NeighborLeafNodes::Size() ; i++ ) if( neighborLeafNodes.data[i] )
+                        {
 				if( processSubTree ) ProcessSubTree( neighborLeafNodes.data[i] );
 				else kernel( neighborLeafNodes.data[i] );
+                        }
 		} );
 }
 

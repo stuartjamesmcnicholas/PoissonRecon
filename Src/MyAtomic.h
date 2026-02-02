@@ -38,6 +38,7 @@ DAMAGE.
 #include <sys/resource.h> 
 #endif // _WIN32 || _WIN64
 #include <mutex>
+#include <type_traits>
 
 namespace PoissonRecon
 {
@@ -125,7 +126,7 @@ namespace PoissonRecon
 	{
 		static void Add( volatile Value &a , const Value &b )
 		{
-			if constexpr( std::is_pod_v< Value > ) AddAtomic( a , b );
+			if ( std::is_standard_layout_v< Value > ) AddAtomic( a , b );
 			else
 			{
 				MK_WARN_ONCE( "should not use this function: " , typeid(Value).name() );
@@ -137,7 +138,7 @@ namespace PoissonRecon
 
 		static Value Set( volatile Value & value , Value newValue )
 		{
-			if constexpr( std::is_pod_v< Value > ) return SetAtomic( value , newValue );
+			if constexpr( std::is_standard_layout_v< Value > ) return SetAtomic( value , newValue );
 			else
 			{
 				MK_WARN_ONCE( "should not use this function: " , typeid(Value).name() );
@@ -151,7 +152,7 @@ namespace PoissonRecon
 
 		static bool Set( volatile Value & value , Value newValue , Value oldValue )
 		{
-			if constexpr( std::is_pod_v< Value > ) return SetAtomic( value , newValue , oldValue );
+			if constexpr( std::is_standard_layout_v< Value > ) return SetAtomic( value , newValue , oldValue );
 			else
 			{
 				MK_WARN_ONCE( "should not use this function: " , typeid(Value).name() , " , " , sizeof(Value) );
@@ -164,7 +165,7 @@ namespace PoissonRecon
 
 		static Value Read( const volatile Value & value )
 		{
-			if constexpr( std::is_pod_v< Value > ) return ReadAtomic( value );
+			if constexpr( std::is_standard_layout_v< Value > ) return ReadAtomic( value );
 			else
 			{
 				MK_WARN_ONCE( "should not use this function: " , typeid(Value).name() , " , " , sizeof(Value) );

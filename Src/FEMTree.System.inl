@@ -1599,8 +1599,10 @@ int FEMTree< Dim , Real >::_getSliceMatrixAndProlongationConstraints( UIntPack< 
 			if( constraints ) constraints[i] = _setMatrixRowAndGetConstraintFromProlongation( UIntPack< FEMSigs ... >() , F , pNeighbors , neighbors , i , matrix , nBegin , pcStencils , ccStencil , bsData , prolongedSolution , interpolationInfos );
 			else                               _setMatrixRowAndGetConstraintFromProlongation( UIntPack< FEMSigs ... >() , F , pNeighbors , neighbors , i , matrix , nBegin , pcStencils , ccStencil , bsData , prolongedSolution , interpolationInfos );
 			if( diagonalR )
+                        {
 				if( _sNodes.treeNodes[i+nBegin]->nodeData.getDirichletElementFlag() ) diagonalR[i] = (Real)0.;
 				else                                                                  diagonalR[i] = (Real)1. / matrix[i][0].Value;
+                        }
 		}
 		else if( constraints ) constraints[i] = T();
 	}
@@ -3057,7 +3059,10 @@ void FEMTree< Dim , Real >::_addFEMConstraints( UIntPack< FEMSigs ... > , UIntPa
 	if( hasCoarserCoefficients )
 	{
 		Pointer( D ) _coefficients = AllocPointer< D >( _sNodesEnd( maxDepth-1 ) );
-		memset( _coefficients , 0 , sizeof(D) * _sNodesEnd(maxDepth-1) );
+                for(int ifill=0;ifill<_sNodesEnd(maxDepth);ifill++){
+                    _coefficients[ifill] = D{};
+                }
+		//memset(_coefficients , 0 , sizeof(D) * _sNodesEnd(maxDepth-1) );
 		for( LocalDepth d=maxDepth-1 ; d>=0 ; d-- )
 		{
 			ThreadPool::ParallelFor( _sNodesBegin(d) , _sNodesEnd(d) , [&]( unsigned int , size_t i )

@@ -875,8 +875,10 @@ DenseNodeData< typename FEMTreeInitializer< Dim , Real >::GeometryNodeType , Iso
 				if( node )
 				{
 					if( geometryNodeDesignators[node]==GeometryNodeType::UNKNOWN )
+                                        {
 						if( interior ) interiorNodes.push_back( node );
 						else           exteriorNodes.push_back( node );
+                                        }
 				}
 				// Otherwise, try the parents' face-adjacent neighbors
 				else
@@ -887,8 +889,10 @@ DenseNodeData< typename FEMTreeInitializer< Dim , Real >::GeometryNodeType , Iso
 						if( node )
 						{
 							if( geometryNodeDesignators[node]==GeometryNodeType::UNKNOWN )
+                                                        {
 								if( interior ) interiorNodes.push_back( node );
 								else           exteriorNodes.push_back( node );
+                                                        }
 							break;
 						}
 					}
@@ -1061,6 +1065,7 @@ DenseNodeData< typename FEMTreeInitializer< Dim , Real >::GeometryNodeType , Iso
 	{
 		if( node->children ) for( int c=0 ; c<(1<<Dim) ; c++ ) SetUnknownDesignatorsFromChildren( node->children + c );
 		if( geometryNodeDesignators[node]==GeometryNodeType::UNKNOWN )
+                {
 			if( node->children )
 			{
 				int interiorCount = 0 , exteriorCount = 0 , boundaryCount = 0;
@@ -1077,6 +1082,7 @@ DenseNodeData< typename FEMTreeInitializer< Dim , Real >::GeometryNodeType , Iso
 				else if( exteriorCount!=0 ) geometryNodeDesignators[node] = GeometryNodeType::INTERIOR;
 			}
 			else if( geometryNodeDesignators[node]==GeometryNodeType::UNKNOWN ) MK_THROW( "Leaf node is unknown" );
+                }
 	};
 	SetUnknownDesignatorsFromParents( root );
 	SetUnknownDesignatorsFromChildren( root );

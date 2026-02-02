@@ -41,7 +41,7 @@ DAMAGE.
 
 using namespace PoissonRecon;
 
-#define NESTEDVECTORMAXSIZE(LogSize,Depth) ((size_t)1)<<(LogSize*(Depth+1))
+#define NESTEDVECTORMAXSIZE(LogSize,Depth) 2147483647  //((size_t)1)<<(LogSize*(Depth+1))
 #define NESTEDVECTORSIZE(LogSize,Depth) ((size_t)1)<<LogSize;
 #define NESTEDVECTORMASK(LogSize,Depth) ((NESTEDVECTORMAXSIZE(LogSize,Depth)) - 1)
 
