@@ -27,14 +27,21 @@ PTD_SOURCE=PointsToDisks.cpp
 SN_SOURCE=ScaleNormals.cpp
 
 #COMPILER ?= gcc
-COMPILER ?= clang
+#COMPILER ?= clang
+COMPILER ?= emcc
 
-ifeq ($(COMPILER),gcc)
+ifeq ($(COMPILER),emcc)
+	CFLAGS += -fwasm-exceptions -pthread -std=c++23 -sMEMORY64=1
+	LFLAGS += -fwasm-exceptions -pthread -sPTHREAD_POOL_SIZE=8 -sPTHREAD_POOL_SIZE_STRICT=8 -sASSERTIONS=2 -sNODERAWFS -sINITIAL_MEMORY=4096MB -sMEMORY64=1 
+	CFLAGS += -I/Users/stuart/Moorhen/install64/include/
+else ifeq ($(COMPILER),gcc)
 	CFLAGS += -fopenmp -Wno-deprecated -std=c++17 -pthread -Wno-invalid-offsetof
 	LFLAGS += -lgomp -lstdc++ -lpthread
+        LFLAGS_IMG += -L/opt/homebrew/lib/ -lz -lpng -ljpeg
 else ifeq ($(COMPILER),gcc-11)
 	CFLAGS += -fopenmp -Wno-deprecated -std=c++17 -pthread -Wno-invalid-offsetof -Werror=strict-aliasing -Wno-nonnull
 	LFLAGS += -lgomp -lstdc++ -lpthread
+        LFLAGS_IMG += -L/opt/homebrew/lib/ -lz -lpng -ljpeg
 else
 # 	CFLAGS += -fopenmp=libiomp5 -Wno-deprecated -Wno-write-strings -std=c++17 -Wno-invalid-offsetof
 # 	LFLAGS += -liomp5 -lstdc++
@@ -42,8 +49,8 @@ else
 	#CFLAGS += -Wno-nan-infinity-disabled
 	CFLAGS += -I/opt/homebrew/include/
 	LFLAGS += -lstdc++
+        LFLAGS_IMG += -L/opt/homebrew/lib/ -lz -lpng -ljpeg
 endif
-LFLAGS_IMG += -L/opt/homebrew/lib/ -lz -lpng -ljpeg
 #LFLAGS += -ljpeg -lmypng -lz
 
 CFLAGS_DEBUG = -DDEBUG -g3
@@ -51,11 +58,12 @@ LFLAGS_DEBUG =
 
 #CFLAGS_RELEASE = -O3 -DRELEASE -funroll-loops -ffast-math -g
 #LFLAGS_RELEASE = -O3 -g
-CFLAGS_RELEASE = -O3 -DRELEASE -funroll-loops -ffast-math -g
-LFLAGS_RELEASE = -O3 -g
+#CFLAGS_RELEASE = -O3 -DRELEASE -funroll-loops -ffast-math -g
+CFLAGS_RELEASE = -O3 -DRELEASE
+LFLAGS_RELEASE = -O3
 
 SRC = Src/
-BIN = Bin/Linux/
+BIN = Bin/Wasm/
 #INCLUDE = /usr/include/
 INCLUDE = .
 
@@ -65,6 +73,9 @@ ifeq ($(COMPILER),gcc)
 else ifeq ($(COMPILER),gcc-11)
 	CC=gcc-11
 	CXX=g++-11
+else ifeq ($(COMPILER),emcc)
+	CC=emcc
+	CXX=em++
 else
 	CC=clang
 	CXX=clang++
