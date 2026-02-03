@@ -521,7 +521,7 @@ int main( int argc , char* argv[] )
 
 	Timer timer;
 	CmdLineParse( argc-1 , &argv[1] , params );
-	ThreadPool::ParallelizationType= (ThreadPool::ParallelType)0;
+	ThreadPool::ParallelizationType= ThreadPool::ParallelType::NONE;
 
 	if( !SampleNum.set )
 	{
