@@ -46,10 +46,10 @@ using namespace PoissonRecon;
 #define NESTEDVECTORMASK(LogSize,Depth) ((NESTEDVECTORMAXSIZE(LogSize,Depth)) - 1)
 
 CmdLineParameter< char* > Out( "out" );
-CmdLineReadable SSDReconstruction( "ssd" ) , EvaluateImplicit( "evaluate" ) , Verbose( "verbose" );
+CmdLineReadable SSDReconstruction( "ssd" ) , EvaluateImplicit( "evaluate" ) , Verbose( "verbose" ), Multithread("multithread");
 CmdLineParameter< int >	Depth( "depth" , 8 ) , SampleNum( "samples" , 100000 ) , ColorMode( "color" , 0 );
 
-CmdLineReadable* params[] = { &Out , &SSDReconstruction , &ColorMode , &Verbose , &Depth , &SampleNum , &EvaluateImplicit , nullptr };
+CmdLineReadable* params[] = { &Out , &SSDReconstruction , &ColorMode , &Verbose , &Depth , &SampleNum , &EvaluateImplicit , &Multithread ,nullptr };
 
 void ShowUsage( char* ex )
 {
@@ -64,6 +64,7 @@ void ShowUsage( char* ex )
 	printf( "\t[--%s]\n" , SSDReconstruction.name );
 	printf( "\t[--%s]\n" , EvaluateImplicit.name );
 	printf( "\t[--%s]\n" , Verbose.name );
+	printf( "\t[--%s]\n" , Multithread.name );
 }
 
 // A simple structure for representing colors. 
@@ -521,7 +522,10 @@ int main( int argc , char* argv[] )
 
 	Timer timer;
 	CmdLineParse( argc-1 , &argv[1] , params );
-	ThreadPool::ParallelizationType= ThreadPool::ParallelType::NONE;
+	ThreadPool::ParallelizationType = ThreadPool::ParallelType::NONE;
+	if(Multithread.set){
+		ThreadPool::ParallelizationType = ThreadPool::ParallelType::ASYNC;
+	}
 
 	if( !SampleNum.set )
 	{
