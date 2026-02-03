@@ -66,27 +66,49 @@ namespace PoissonRecon
 		template< typename Function , typename ... Functions >
 		static void ParallelSections( const Function &function , const Functions & ... functions )
 		{
-			std::vector< std::future< void > > futures;
-			if constexpr( sizeof ... (Functions) )
+			if( ThreadPool::ParallelizationType==ThreadPool::ParallelType::NONE)
 			{
-				futures.reserve( sizeof...(Functions) );
-				_ParallelSections( futures , functions... );
+				if constexpr( sizeof ... (Functions) )
+				{
+					_SerialSections( functions... );
+				}
+				function();
 			}
-			function();
-			for( unsigned int i=0 ; i<futures.size() ; i++ ) futures[i].get();
+			else
+			{
+				std::vector< std::future< void > > futures;
+				if constexpr( sizeof ... (Functions) )
+				{
+					futures.reserve( sizeof...(Functions) );
+					_ParallelSections( futures , functions... );
+				}
+				function();
+				for( unsigned int i=0 ; i<futures.size() ; i++ ) futures[i].get();
+			}
 		}
 
 		template< typename Function , typename ... Functions >
 		static void ParallelSections( const Function &&function , const Functions && ... functions )
 		{
-			std::vector< std::future< void > > futures;
-			if constexpr( sizeof ... (Functions) )
+			if( ThreadPool::ParallelizationType==ThreadPool::ParallelType::NONE)
 			{
-				futures.reserve( sizeof...(Functions) );
-				_ParallelSections( futures , std::move(functions)... );
+				if constexpr( sizeof ... (Functions) )
+				{
+					_SerialSections( functions... );
+				}
+				function();
 			}
-			function();
-			for( unsigned int i=0 ; i<futures.size() ; i++ ) futures[i].get();
+			else
+			{
+				std::vector< std::future< void > > futures;
+				if constexpr( sizeof ... (Functions) )
+				{
+					futures.reserve( sizeof...(Functions) );
+					_ParallelSections( futures , std::move(functions)... );
+				}
+				function();
+				for( unsigned int i=0 ; i<futures.size() ; i++ ) futures[i].get();
+			}
 		}
 
 		static void ParallelFor( size_t begin , size_t end , const std::function< void ( unsigned int , size_t ) > &iterationFunction , unsigned int numThreads=_NumThreads , ParallelType pType=ParallelizationType , ScheduleType schedule=Schedule , size_t chunkSize=ChunkSize )
@@ -158,12 +180,24 @@ namespace PoissonRecon
 		static unsigned int _NumThreads;
 
 		template< typename Function , typename ... Functions >
+		static void _SerialSections( const Function &function , const Functions & ... functions )
+		{
+			function();
+			if constexpr( sizeof...(Functions) ) _SerialSections(functions... );
+		}
+		template< typename Function , typename ... Functions >
 		static void _ParallelSections( std::vector< std::future< void > > &futures , const Function &function , const Functions & ... functions )
 		{
 			futures.push_back( std::async( std::launch::async , function ) );
 			if constexpr( sizeof...(Functions) ) _ParallelSections( futures , functions... );
 		}
 
+		template< typename Function , typename ... Functions >
+		static void _SerialSections( const Function &&function , const Functions && ... functions )
+		{
+			function();
+			if constexpr( sizeof...(Functions) ) _SerialSections(functions... );
+		}
 		template< typename Function , typename ... Functions >
 		static void _ParallelSections( std::vector< std::future< void > > &futures , const Function &&function , const Functions && ... functions )
 		{
