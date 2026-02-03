@@ -97,9 +97,6 @@ namespace PoissonRecon
 			std::atomic< size_t > index;
 			index.store( 0 );
 
-				for( size_t i=begin ; i<end ; i++ ) iterationFunction( 0 , i );
-				return;
-
 			// If the computation is serial, go ahead and run it
 			if( pType==ParallelType::NONE || numThreads<=1 )
 			{

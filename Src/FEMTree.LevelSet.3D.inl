@@ -2148,18 +2148,22 @@ public:
 					if( d<=tree._maxDepth )
 					{
 
-					slabValues[d].sliceValues(o).setFromScratch( slabValues[d].sliceScratch(o).vKeyValues );
-					slabValues[d].sliceValues(o).setFromScratch( slabValues[d].sliceScratch(o).eKeyValues );
-					slabValues[d].sliceValues(o).setFromScratch( slabValues[d].sliceScratch(o).fKeyValues );
-                                        /*
+			                    if( ThreadPool::ParallelizationType==ThreadPool::ParallelType::NONE)
+                                            {
+					        slabValues[d].sliceValues(o).setFromScratch( slabValues[d].sliceScratch(o).vKeyValues );
+					        slabValues[d].sliceValues(o).setFromScratch( slabValues[d].sliceScratch(o).eKeyValues );
+					        slabValues[d].sliceValues(o).setFromScratch( slabValues[d].sliceScratch(o).fKeyValues );
+			                    }
+                                            else
+                                            {
 						ThreadPool::ParallelSections
 						(
 							[ &slabValues , d , o ]( void ){ slabValues[d].sliceValues(o).setFromScratch( slabValues[d].sliceScratch(o).vKeyValues ); } ,
 							[ &slabValues , d , o ]( void ){ slabValues[d].sliceValues(o).setFromScratch( slabValues[d].sliceScratch(o).eKeyValues ); } ,
 							[ &slabValues , d , o ]( void ){ slabValues[d].sliceValues(o).setFromScratch( slabValues[d].sliceScratch(o).fKeyValues ); }
 						);
-                                                */
-					}
+					    }
+                                        }
 					if( o&1 ) break;
 				}
 			}
@@ -2173,17 +2177,21 @@ public:
 			{
 				if( d<=tree._maxDepth )
 				{
+			            if( ThreadPool::ParallelizationType==ThreadPool::ParallelType::NONE)
+                                    {
 					slabValues[d].xSliceValues(o).setFromScratch( slabValues[d].xSliceScratch(o).vKeyValues );
 					slabValues[d].xSliceValues(o).setFromScratch( slabValues[d].xSliceScratch(o).eKeyValues );
 					slabValues[d].xSliceValues(o).setFromScratch( slabValues[d].xSliceScratch(o).fKeyValues );
-                                        /*
+                                    }
+                                    else
+                                    {
 					ThreadPool::ParallelSections
 					(
 						[ &slabValues , d , o ]( void ){ slabValues[d].xSliceValues(o).setFromScratch( slabValues[d].xSliceScratch(o).vKeyValues ); } ,
 						[ &slabValues , d , o ]( void ){ slabValues[d].xSliceValues(o).setFromScratch( slabValues[d].xSliceScratch(o).eKeyValues ); } ,
 						[ &slabValues , d , o ]( void ){ slabValues[d].xSliceValues(o).setFromScratch( slabValues[d].xSliceScratch(o).fKeyValues ); }
 					);
-                                        */
+                                    }
 				}
 				if( !(o&1) && !boundary ) break;
 			}
