@@ -1,3 +1,4 @@
+PRM_TARGET=PoissonReconMoorhen
 PR_TARGET=PoissonRecon
 PRC_TARGET=PoissonReconClient
 PRS_TARGET=PoissonReconServer
@@ -12,6 +13,7 @@ RE_TARGET=ReconExample
 PTD_TARGET=PointsToDisks
 SN_TARGET=ScaleNormals
 
+PRM_SOURCE=PoissonReconMoorhen.cpp poisson_recon_call.cpp
 PR_SOURCE=PoissonRecon.cpp
 PRC_SOURCE=PoissonReconClient.cpp
 PRS_SOURCE=PoissonReconServer.cpp
@@ -82,6 +84,7 @@ endif
 
 MD=mkdir
 
+PRM_OBJECTS=$(addprefix $(BIN), $(addsuffix .o, $(basename $(PRM_SOURCE))))
 PR_OBJECTS=$(addprefix $(BIN), $(addsuffix .o, $(basename $(PR_SOURCE))))
 PRC_OBJECTS=$(addprefix $(BIN), $(addsuffix .o, $(basename $(PRC_SOURCE))))
 PRS_OBJECTS=$(addprefix $(BIN), $(addsuffix .o, $(basename $(PRS_SOURCE))))
@@ -130,6 +133,11 @@ debug: $(BIN)$(CP_TARGET)
 debug: $(BIN)$(RE_TARGET)
 debug: $(BIN)$(PTD_TARGET)
 debug: $(BIN)$(SN_TARGET)
+
+poissonrecon_moorhen: CFLAGS += $(CFLAGS_RELEASE)
+poissonrecon_moorhen: LFLAGS += $(LFLAGS_RELEASE)
+poissonrecon_moorhen: make_dir
+poissonrecon_moorhen: $(BIN)$(PRM_TARGET)
 
 poissonrecon: CFLAGS += $(CFLAGS_RELEASE)
 poissonrecon: LFLAGS += $(LFLAGS_RELEASE)
@@ -225,6 +233,10 @@ clean:
 
 make_dir:
 	$(MD) -p $(BIN)
+
+$(BIN)$(PRM_TARGET): $(PRM_OBJECTS)
+	cd PNG  && make COMPILER=$(COMPILER)
+	$(CXX) -pthread -o $@ $(PRM_OBJECTS) -L$(BIN) $(LFLAGS) $(LFLAGS_IMG)
 
 $(BIN)$(PR_TARGET): $(PR_OBJECTS)
 	cd PNG  && make COMPILER=$(COMPILER)
