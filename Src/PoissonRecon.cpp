@@ -671,3 +671,34 @@ int main( int argc , char* argv[] )
 
 	return EXIT_SUCCESS;
 }
+
+#define NESTEDVECTORMAXSIZE(LogSize,Depth) 2147483647  //((size_t)1)<<(LogSize*(Depth+1))
+#define NESTEDVECTORSIZE(LogSize,Depth) ((size_t)1)<<LogSize;
+#define NESTEDVECTORMASK(LogSize,Depth) ((NESTEDVECTORMAXSIZE(LogSize,Depth)) - 1)
+
+template<> size_t NestedVector< PoissonRecon::DualPointAndDataInfo<3u, float, PoissonRecon::DirectSum<float, PoissonRecon::Point<float, 3u>, PoissonRecon::DirectSum<float>>, float, 1u>, 1u, 20u >::_MaxSize = NESTEDVECTORMAXSIZE(20,1);
+template<> size_t NestedVector< PoissonRecon::DualPointAndDataInfo<3u, float, PoissonRecon::DirectSum<float, PoissonRecon::Point<float, 3u>, PoissonRecon::DirectSum<float>>, float, 1u>, 1u, 20u >::_Size = NESTEDVECTORSIZE(20,1);
+template<> size_t NestedVector< PoissonRecon::DualPointAndDataInfo<3u, float, PoissonRecon::DirectSum<float, PoissonRecon::Point<float, 3u>, PoissonRecon::DirectSum<float>>, float, 1u>, 1u, 20u >::_Mask = NESTEDVECTORMASK(20,1);
+template<> size_t NestedVector< PoissonRecon::ProjectiveData<PoissonRecon::DirectSum<float>, float>, 1u, 20u >::_MaxSize = NESTEDVECTORMAXSIZE(20,1);
+template<> size_t NestedVector< PoissonRecon::ProjectiveData<PoissonRecon::DirectSum<float>, float>, 1u, 20u >::_Size = NESTEDVECTORSIZE(20,1);
+template<> size_t NestedVector< PoissonRecon::ProjectiveData<PoissonRecon::DirectSum<float>, float>, 1u, 20u >::_Mask = NESTEDVECTORMASK(20,1);
+template<> size_t NestedVector< PoissonRecon::DualPointInfo<3u, float, float, 0u>, 1u, 20u >::_MaxSize = NESTEDVECTORMAXSIZE(20,1);
+template<> size_t NestedVector< PoissonRecon::DualPointInfo<3u, float, float, 0u>, 1u, 20u >::_Size = NESTEDVECTORSIZE(20,1);
+template<> size_t NestedVector< PoissonRecon::DualPointInfo<3u, float, float, 0u>, 1u, 20u >::_Mask = NESTEDVECTORMASK(20,1);
+template<> size_t NestedVector< PoissonRecon::DualPointAndDataInfo<3u, float, float, float, 0u>, 1u, 20u >::_MaxSize = NESTEDVECTORMAXSIZE(20,1);
+template<> size_t NestedVector< PoissonRecon::DualPointAndDataInfo<3u, float, float, float, 0u>, 1u, 20u >::_Size = NESTEDVECTORSIZE(20,1);
+template<> size_t NestedVector< PoissonRecon::DualPointAndDataInfo<3u, float, float, float, 0u>, 1u, 20u >::_Mask = NESTEDVECTORMASK(20,1);
+template<> size_t NestedVector< int , 1u , 20u >::_MaxSize = NESTEDVECTORMAXSIZE(20,1);
+template<> size_t NestedVector< int , 1u , 20u >::_Size = NESTEDVECTORSIZE(20,1);
+template<> size_t NestedVector< int , 1u , 20u >::_Mask = NESTEDVECTORMASK(20,1);
+template<> size_t NestedVector< float , 1u , 20u >::_MaxSize = NESTEDVECTORMAXSIZE(20,1);
+template<> size_t NestedVector< float , 1u , 20u >::_Size = NESTEDVECTORSIZE(20,1);
+template<> size_t NestedVector< float , 1u , 20u >::_Mask = NESTEDVECTORMASK(20,1);
+template<> size_t NestedVector< PoissonRecon::Point<float, 3u> , 1u , 20u >::_MaxSize = NESTEDVECTORMAXSIZE(20,1);
+template<> size_t NestedVector< PoissonRecon::Point<float, 3u> , 1u , 20u >::_Size = NESTEDVECTORSIZE(20,1);
+template<> size_t NestedVector< PoissonRecon::Point<float, 3u> , 1u , 20u >::_Mask = NESTEDVECTORMASK(20,1);
+template<> size_t NestedVector<PoissonRecon::ProjectiveData<PoissonRecon::DirectSum<float, PoissonRecon::Point<float>>, float>, 1u, 20u>::_Size = NESTEDVECTORMAXSIZE(20,1);
+template<> size_t NestedVector<PoissonRecon::ProjectiveData<PoissonRecon::DirectSum<float, PoissonRecon::Point<float>>, float>, 1u, 20u>::_MaxSize = NESTEDVECTORMAXSIZE(20,1);
+template<> size_t PoissonRecon::NestedVector<PoissonRecon::ProjectiveData<PoissonRecon::DirectSum<float, PoissonRecon::Point<float, 3u>>, float>, 1u, 20u>::_Size = NESTEDVECTORMAXSIZE(20,1);
+template<> size_t PoissonRecon::NestedVector<PoissonRecon::ProjectiveData<PoissonRecon::DirectSum<float, PoissonRecon::Point<float, 3u>>, float>, 1u, 20u>::_MaxSize = NESTEDVECTORMAXSIZE(20,1);
+

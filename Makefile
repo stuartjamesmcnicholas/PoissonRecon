@@ -31,7 +31,7 @@ SN_SOURCE=ScaleNormals.cpp
 COMPILER ?= emcc
 
 ifeq ($(COMPILER),emcc)
-	CFLAGS += -fwasm-exceptions -pthread -std=c++23 -sMEMORY64=1
+	CFLAGS += -fwasm-exceptions -pthread -std=c++23 -sMEMORY64=1 --use-port=libjpeg
 	LFLAGS += -fwasm-exceptions -pthread -sPTHREAD_POOL_SIZE=8 -sPTHREAD_POOL_SIZE_STRICT=8 -sASSERTIONS=2 -sNODERAWFS -sINITIAL_MEMORY=4096MB -sMEMORY64=1 
 	CFLAGS += -I/Users/stuart/Moorhen/install64/include/
 else ifeq ($(COMPILER),gcc)
@@ -54,7 +54,7 @@ endif
 #LFLAGS += -ljpeg -lmypng -lz
 
 CFLAGS_DEBUG = -DDEBUG -g3
-LFLAGS_DEBUG =
+LFLAGS_DEBUG = -g3
 
 #CFLAGS_RELEASE = -O3 -DRELEASE -funroll-loops -ffast-math -g
 #LFLAGS_RELEASE = -O3 -g
@@ -181,8 +181,8 @@ chunkply: LFLAGS += $(LFLAGS_RELEASE)
 chunkply: make_dir
 chunkply: $(BIN)$(CP_TARGET)
 
-reconexample: CFLAGS += $(CFLAGS_RELEASE)
-reconexample: LFLAGS += $(LFLAGS_RELEASE)
+reconexample: CFLAGS += $(CFLAGS_DEBUG)
+reconexample: LFLAGS += $(LFLAGS_DEBUG)
 reconexample: make_dir
 reconexample: $(BIN)$(RE_TARGET)
 

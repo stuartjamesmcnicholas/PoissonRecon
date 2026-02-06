@@ -45,11 +45,11 @@ using namespace PoissonRecon;
 #define NESTEDVECTORSIZE(LogSize,Depth) ((size_t)1)<<LogSize;
 #define NESTEDVECTORMASK(LogSize,Depth) ((NESTEDVECTORMAXSIZE(LogSize,Depth)) - 1)
 
-CmdLineParameter< char* > Out( "out" );
+CmdLineParameter< char* > Out( "out" ), Inputmesh("inputmesh");
 CmdLineReadable SSDReconstruction( "ssd" ) , EvaluateImplicit( "evaluate" ) , Verbose( "verbose" ), Multithread("multithread");
 CmdLineParameter< int >	Depth( "depth" , 8 ) , SampleNum( "samples" , 100000 ) , ColorMode( "color" , 0 );
 
-CmdLineReadable* params[] = { &Out , &SSDReconstruction , &ColorMode , &Verbose , &Depth , &SampleNum , &EvaluateImplicit , &Multithread ,nullptr };
+CmdLineReadable* params[] = { &Out , &SSDReconstruction , &ColorMode , &Verbose , &Depth , &SampleNum , &EvaluateImplicit , &Multithread , &Inputmesh, nullptr };
 
 void ShowUsage( char* ex )
 {
@@ -65,6 +65,7 @@ void ShowUsage( char* ex )
 	printf( "\t[--%s]\n" , EvaluateImplicit.name );
 	printf( "\t[--%s]\n" , Verbose.name );
 	printf( "\t[--%s]\n" , Multithread.name );
+	printf( "\t[--%s]\n" , Inputmesh.name );
 }
 
 // A simple structure for representing colors. 
@@ -99,6 +100,58 @@ namespace PoissonRecon
 		}
 	};
 }
+
+// A stream for generating random oriented samples on the sphere
+template< typename Real , unsigned int Dim >
+struct ObjFileSampleStream : public Reconstructor::InputOrientedSampleStream< Real , Dim >
+{
+	// from https://en.cppreference.com/w/cpp/numeric/random/uniform_real_distribution
+	std::random_device randomDevice;
+	std::default_random_engine generator;
+	std::uniform_real_distribution< Real > distribution;
+	std::vector< Point< Real , Dim > > points;
+
+	// Constructs a stream that contains the specified number of samples
+	ObjFileSampleStream( unsigned int sz, const char* fname ) : _size(sz) , _current(0) , generator(0) , distribution((Real)-1.0,(Real)1.0)
+	{
+		std::cout << "ObjFileSampleStream" << std::endl;
+		std::ifstream inputPoints(fname);
+		std::string myText;
+		while (getline (inputPoints, myText)) {
+			if(myText.starts_with("v ")) {
+				std::istringstream strm(myText);
+				std::string v;
+				Real x;
+				Real y;
+				Real z;
+				strm >> v >> x >> y >> z;
+				points.push_back(Point< Real , Dim >(x,y,z));
+			}
+		}
+		_size = points.size();
+		std::cout << "Total 'sample' points " << _size << std::endl;
+	}
+
+	// Overrides the pure abstract method from InputOrientedSampleStream< Real , Dim >
+	void reset( void ){ generator.seed(0) ; _current = 0; }
+
+	// Overrides the pure abstract method from InputOrientedSampleStream< Real , Dim >
+	bool read( Point< Real , Dim > &p , Point< Real , Dim > &n )
+	{
+		if( _current<_size )
+		{
+			//p = n = RandomSpherePoint( generator , distribution );
+			p = n = points[_current];
+			std::cout << p << std::endl;
+			_current++;
+			return true;
+		}
+		else return false;
+	}
+
+protected:
+	unsigned int _size , _current;
+};
 
 // A stream for generating random oriented samples on the sphere
 template< typename Real , unsigned int Dim >
@@ -394,11 +447,19 @@ void Execute( void )
 	}
 	else
 	{
-		// A stream generating random oriented points on the sphere
-		SphereOrientedSampleStream< Real , Dim > sampleStream( SampleNum.value );
-
-		// Construct the implicit representation
-		Implicit *implicit = Solver::Solve( sampleStream , solverParams );
+		Implicit *implicit = 0;
+	        if(Inputmesh.set)
+		{
+			ObjFileSampleStream< Real , Dim > sampleStream( SampleNum.value, Inputmesh.value );
+			// Construct the implicit representation
+			implicit = Solver::Solve( sampleStream , solverParams );
+		}
+		else {
+			// A stream generating random oriented points on the sphere
+			SphereOrientedSampleStream< Real , Dim > sampleStream( SampleNum.value );
+			// Construct the implicit representation
+			implicit = Solver::Solve( sampleStream , solverParams );
+		}
 
 		// vectors for storing the polygons (specifically, triangles) and the coordinates of the vertices
 		std::vector< std::vector< int > > polygons;
@@ -541,7 +602,7 @@ int main( int argc , char* argv[] )
 		std::cout << "****************************************************" << std::endl;
 		std::cout << "****************************************************" << std::endl;
 	}
-	
+
 	// Solve using single float precision, in dimension 3, w/ finite-elements of degree 2 for SSD and degree 1 for Poisson, and using Neumann boundaries
 	if( SSDReconstruction.set )
 		if( ColorMode.value==1 ) Execute< float , 3 , Reconstructor::SSD     , true  >();

@@ -166,7 +166,10 @@ Extent< Real , Dim , ExtendedAxes > GetExtent( InputDataStream< Point< Real , Di
 {
 	Point< Real,  Dim > p;
 	Extent< Real , Dim , ExtendedAxes > e;
-	while( stream.read( p , data... ) ) e.add(p);
+	while( stream.read( p , data... ) ) {
+	    //std::cout << "GetExtent: " << p << std::endl;
+	    e.add(p);
+	}
 	return e;
 }
 

@@ -94,6 +94,7 @@ size_t FEMTreeInitializer< Dim , Real >::Initialize( FEMTreeNode &root , InputDa
 	Point< Real , Dim > p;
 	while( pointStream.read( p , d... ) )
 	{
+            //std::cout << "Read from stream " << p << std::endl;
 		// Check if the data is good
 		if( !IsValid( p , d... ) ){ badDataCount++ ; continue; }
 

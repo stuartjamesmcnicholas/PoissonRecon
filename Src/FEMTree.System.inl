@@ -3059,10 +3059,12 @@ void FEMTree< Dim , Real >::_addFEMConstraints( UIntPack< FEMSigs ... > , UIntPa
 	if( hasCoarserCoefficients )
 	{
 		Pointer( D ) _coefficients = AllocPointer< D >( _sNodesEnd( maxDepth-1 ) );
+                /*
                 for(int ifill=0;ifill<_sNodesEnd(maxDepth);ifill++){
                     _coefficients[ifill] = D{};
                 }
-		//memset(_coefficients , 0 , sizeof(D) * _sNodesEnd(maxDepth-1) );
+                */
+		memset(_coefficients , 0 , sizeof(D) * _sNodesEnd(maxDepth-1) );
 		for( LocalDepth d=maxDepth-1 ; d>=0 ; d-- )
 		{
 			ThreadPool::ParallelFor( _sNodesBegin(d) , _sNodesEnd(d) , [&]( unsigned int , size_t i )
