@@ -29,6 +29,10 @@ DAMAGE.
 #include "PreProcessor.h"
 #include "Reconstructors.h"
 
+#include <fstream>
+#include <string>
+#include <iostream>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -571,11 +575,20 @@ void Execute( const AuxDataFactory &auxDataFactory )
 #endif // !FAST_COMPILE
 
 
-void PoissonReconMain( const std::string &_input, const std::string &_output  )
+std::string PoissonReconMain( const std::string &_input )
 {
 
-        const char *input = _input.c_str();
-        const char *output = _output.c_str();
+        std::string output_string = "";
+
+        std::string name1 = std::string(std::tmpnam(nullptr))+std::string(".npts");
+        std::string name2 = std::string(std::tmpnam(nullptr))+std::string(".ply");
+        std::ofstream out(name1);
+        out << _input;
+        out.close();
+
+        const char *input = name1.c_str();
+        const char *output = name2.c_str();
+
 	const char *args[] = {"PoissonReconMoorhen","--in",input,"--out",output,"--depth","8","--verbose","--parallel","1","--degree","1"};
 	const int n_args = 12;
 
@@ -592,7 +605,7 @@ void PoissonReconMain( const std::string &_input, const std::string &_output  )
 	if( !In.set )
 	{
 		ShowUsage( args[0] );
-		return;
+		return output_string;
 	}
 
 #ifdef USE_DOUBLE
@@ -658,6 +671,8 @@ void PoissonReconMain( const std::string &_input, const std::string &_output  )
 		printf( "Time (Wall/CPU): %.2f / %.2f\n" , timer.wallTime() , timer.cpuTime() );
 		printf( "Peak Memory (MB): %d\n" , MemoryInfo::PeakMemoryUsageMB() );
 	}
+
+        return output_string;
 
 }
 
