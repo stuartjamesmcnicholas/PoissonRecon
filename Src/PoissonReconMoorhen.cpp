@@ -672,7 +672,11 @@ std::string PoissonReconMain( const std::string &_input )
 		printf( "Peak Memory (MB): %d\n" , MemoryInfo::PeakMemoryUsageMB() );
 	}
 
-        return output_string;
+        std::ifstream t(name2);
+        std::stringstream buffer;
+        buffer << t.rdbuf();
+
+        return buffer.str();
 
 }
 
