@@ -42,7 +42,6 @@ DAMAGE.
 #include "Image.h"
 #include "RegularGrid.h"
 #include "DataStream.imp.h"
-#include "DataStreamMoorhen.imp.h"
 
 #define DEFAULT_DIMENSION 3
 
@@ -144,7 +143,7 @@ CmdLineReadable* params[] =
 	NULL
 };
 
-void ShowUsage(char* ex)
+void ShowUsage(const char* ex)
 {
 	printf( "Usage: %s\n" , ex );
 	printf( "\t --%s <input points>\n" , In.name );
@@ -376,7 +375,7 @@ void Execute( const AuxDataFactory &auxDataFactory )
 		profiler.reset();
 		char *ext = GetFileExtension( In.value );
 
-		pointStream = new  StringInputDataStream< InputSampleFactory >( In.value , inputSampleFactory );
+		pointStream = new  ASCIIInputDataStream< InputSampleFactory >( In.value , inputSampleFactory );
 		delete[] ext;
 	}
 
@@ -572,14 +571,19 @@ void Execute( const AuxDataFactory &auxDataFactory )
 #endif // !FAST_COMPILE
 
 
-std::string PoissonReconMain( int argc , char* argv[], const std::stringstream &input  )
+void PoissonReconMain( const std::string &_input, const std::string &_output  )
 {
+
+        const char *input = _input.c_str();
+        const char *output = _output.c_str();
+	const char *args[] = {"PoissonReconMoorhen","--in",input,"--out",output,"--depth","8","--verbose","--parallel","1","--degree","1"};
+	const int n_args = 12;
+
 	Timer timer;
-	std::string output;
 #ifdef ARRAY_DEBUG
 	MK_WARN( "Array debugging enabled" );
 #endif // ARRAY_DEBUG
-	CmdLineParse( argc-1 , &argv[1] , params );
+	CmdLineParse( n_args-1 , (char **)(&args[1]) , params );
 	if( MaxMemoryGB.value>0 ) SetPeakMemoryMB( MaxMemoryGB.value<<10 );
 	ThreadPool::ChunkSize = ThreadChunkSize.value;
 	ThreadPool::Schedule = (ThreadPool::ScheduleType)ScheduleType.value;
@@ -587,8 +591,8 @@ std::string PoissonReconMain( int argc , char* argv[], const std::stringstream &
 
 	if( !In.set )
 	{
-		ShowUsage( argv[0] );
-		return output;
+		ShowUsage( args[0] );
+		return;
 	}
 
 #ifdef USE_DOUBLE
@@ -655,7 +659,6 @@ std::string PoissonReconMain( int argc , char* argv[], const std::stringstream &
 		printf( "Peak Memory (MB): %d\n" , MemoryInfo::PeakMemoryUsageMB() );
 	}
 
-	return output;
 }
 
 #define NESTEDVECTORMAXSIZE(LogSize,Depth) 2147483647  //((size_t)1)<<(LogSize*(Depth+1))

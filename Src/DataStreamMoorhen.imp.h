@@ -30,6 +30,7 @@ DAMAGE.
 #define DATA_STREAM_MOORHEN_IMPLEMENTATION_INCLUDED
 
 #include <vector>
+#include <sstream>
 #include "DataStream.h"
 #include "VertexFactory.h"
 #include "Ply.h"
@@ -44,8 +45,9 @@ namespace PoissonRecon
 	struct StringInputDataStream : public InputDataStream< typename Factory::VertexType >
 	{
 		typedef typename Factory::VertexType Data;
+		std::stringstream _stream;
 
-		StringInputDataStream( const char* fileName , const Factory &factory );
+		StringInputDataStream( const std::stringstream &input , const Factory &factory );
 		~StringInputDataStream( void );
 		void reset( void );
 		bool read( Data &d );

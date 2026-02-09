@@ -26,25 +26,35 @@ ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF S
 DAMAGE.
 */
 
+#include <sstream>
+
 //////////////////////////
 // StringInputDataStream //
 //////////////////////////
 template< typename Factory >
-StringInputDataStream< Factory >::StringInputDataStream( const char* fileName , const Factory &factory ) : _factory( factory )
+StringInputDataStream< Factory >::StringInputDataStream( const std::stringstream &input , const Factory &factory ) : _factory( factory )
 {
-	_fp = fopen( fileName , "r" );
-	if( !_fp ) MK_THROW( "Failed to open file for reading: %s" , fileName );
+    _stream << input.str();
 }
 
 template< typename Factory >
 StringInputDataStream< Factory >::~StringInputDataStream( void )
 {
-	fclose( _fp );
-	_fp = NULL;
 }
 
 template< typename Factory >
-void StringInputDataStream< Factory >::reset( void ) { fseek( _fp , 0 , SEEK_SET ); }
+void StringInputDataStream< Factory >::reset( void ) { _stream.seekg(0); }
 
 template< typename Factory >
-bool StringInputDataStream< Factory >::read( Data &d ){ return _factory.readASCII( _fp , d ); }
+bool StringInputDataStream< Factory >::read( Data &d ){ 
+    /*
+            char buf[4096];
+            if(_stream.read(buf,sizeof(d))){
+                memcpy( &d , buf , sizeof(d) ); 
+                return true;
+            } else {
+                return false;
+            }
+	    */
+    
+}
