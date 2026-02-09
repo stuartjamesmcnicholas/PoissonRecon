@@ -27,7 +27,7 @@ target_sources(
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/Factor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/Geometry.h
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/Image.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/Src/JPEG.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/PoissonReconJPEG.h
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/LinearSolvers.h
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/MAT.h
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/MarchingCubes.h
@@ -37,7 +37,7 @@ target_sources(
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/MyExceptions.h
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/MyMiscellany.h
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/NestedVector.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/Src/PNG.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/Src/PoissonReconPNG.h
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/PPolynomial.h
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/ParameterPack.h
     ${CMAKE_CURRENT_SOURCE_DIR}/Src/Ply.h

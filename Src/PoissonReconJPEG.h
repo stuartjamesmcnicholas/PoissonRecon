@@ -81,7 +81,7 @@ namespace PoissonRecon
 		unsigned int _currentRow;
 	};
 
-#include "JPEG.inl"
+#include "PoissonReconJPEG.inl"
 }
 
 #endif //JPEG_INCLUDED

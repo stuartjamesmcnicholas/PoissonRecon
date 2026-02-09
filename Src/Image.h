@@ -141,8 +141,8 @@ namespace PoissonRecon
 
 
 // [WARNING] Need to include "png.h" before "jpeg.h" so that "setjmp.h" is not already included (?)
-#include "PNG.h"
-#include "JPEG.h"
+#include "PoissonReconPNG.h"
+#include "PoissonReconJPEG.h"
 
 namespace PoissonRecon
 {

@@ -64,7 +64,7 @@ namespace PoissonRecon
 		unsigned int _currentRow;
 	};
 
-#include "PNG.inl"
+#include "PoissonReconPNG.inl"
 }
 
 #endif //PNG_INCLUDED
