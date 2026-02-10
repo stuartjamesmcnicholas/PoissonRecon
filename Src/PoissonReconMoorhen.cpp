@@ -575,7 +575,7 @@ void Execute( const AuxDataFactory &auxDataFactory )
 #endif // !FAST_COMPILE
 
 
-std::string PoissonReconMain( const std::string &_input )
+std::string PoissonReconMain( const std::string &_input, bool doParallel )
 {
 
         std::string output_string = "";
@@ -589,14 +589,19 @@ std::string PoissonReconMain( const std::string &_input )
         const char *input = name1.c_str();
         const char *output = name2.c_str();
 
-	const char *args[] = {"PoissonReconMoorhen","--in",input,"--out",output,"--depth","8","--verbose","--parallel","1","--degree","1"};
+	const char *args_serial[] = {"PoissonReconMoorhen","--in",input,"--out",output,"--depth","8","--verbose","--parallel","1","--degree","1"};
+	const char *args_parallel[] = {"PoissonReconMoorhen","--in",input,"--out",output,"--depth","8","--verbose","--parallel","0","--degree","1"};
 	const int n_args = 12;
 
 	Timer timer;
 #ifdef ARRAY_DEBUG
 	MK_WARN( "Array debugging enabled" );
 #endif // ARRAY_DEBUG
-	CmdLineParse( n_args-1 , (char **)(&args[1]) , params );
+        if(doParallel){
+	    CmdLineParse( n_args-1 , (char **)(&args_parallel[1]) , params );
+        } else {
+	    CmdLineParse( n_args-1 , (char **)(&args_serial[1]) , params );
+        }
 	if( MaxMemoryGB.value>0 ) SetPeakMemoryMB( MaxMemoryGB.value<<10 );
 	ThreadPool::ChunkSize = ThreadChunkSize.value;
 	ThreadPool::Schedule = (ThreadPool::ScheduleType)ScheduleType.value;
@@ -604,7 +609,7 @@ std::string PoissonReconMain( const std::string &_input )
 
 	if( !In.set )
 	{
-		ShowUsage( args[0] );
+		ShowUsage( args_serial[0] );
 		return output_string;
 	}
 
