@@ -207,7 +207,11 @@ namespace PoissonRecon
 	};
 
 	inline ThreadPool::ParallelType ThreadPool::ParallelizationType = ThreadPool::ParallelType::NONE;
+#ifdef __EMSCRIPTEN__
+	inline unsigned int ThreadPool::_NumThreads = 4;
+#else
 	inline unsigned int ThreadPool::_NumThreads = std::thread::hardware_concurrency();
+#endif
 	inline ThreadPool::ScheduleType ThreadPool::Schedule = ThreadPool::DYNAMIC;
 	inline size_t ThreadPool::ChunkSize = 128;
 
