@@ -65,3 +65,6 @@ INSTALL(TARGETS PoissonRecon
         LIBRARY DESTINATION lib
 	FILE_SET public_headers DESTINATION include/PoissonRecon
 )
+
+add_executable(poisson_recon_test EXCLUDE_FROM_ALL Src/poisson_recon_call.cpp)
+target_link_libraries(poisson_recon_test PRIVATE PoissonRecon)
