@@ -606,6 +606,7 @@ std::string PoissonReconMain( const std::string &_input, bool doParallel )
 	ThreadPool::ChunkSize = ThreadChunkSize.value;
 	ThreadPool::Schedule = (ThreadPool::ScheduleType)ScheduleType.value;
 	ThreadPool::ParallelizationType= (ThreadPool::ParallelType)ParallelType.value;
+	ThreadPool::ParallelizationType= ThreadPool::ParallelType::STD_THREAD;
 
 	if( !In.set )
 	{
@@ -714,4 +715,4 @@ template<> size_t NestedVector<PoissonRecon::ProjectiveData<PoissonRecon::Direct
 template<> size_t NestedVector<PoissonRecon::ProjectiveData<PoissonRecon::DirectSum<float, PoissonRecon::Point<float>>, float>, 1u, 20u>::_MaxSize = NESTEDVECTORMAXSIZE(20,1);
 template<> size_t PoissonRecon::NestedVector<PoissonRecon::ProjectiveData<PoissonRecon::DirectSum<float, PoissonRecon::Point<float, 3u>>, float>, 1u, 20u>::_Size = NESTEDVECTORMAXSIZE(20,1);
 template<> size_t PoissonRecon::NestedVector<PoissonRecon::ProjectiveData<PoissonRecon::DirectSum<float, PoissonRecon::Point<float, 3u>>, float>, 1u, 20u>::_MaxSize = NESTEDVECTORMAXSIZE(20,1);
-
+ctpl::thread_pool ThreadPool::p(8);

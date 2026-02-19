@@ -32,22 +32,26 @@ DAMAGE.
 #include <vector>
 #include <atomic>
 #include <functional>
+#include <algorithm>
 #include <future>
 #ifdef _OPENMP
 #include <omp.h>
 #endif // _OPENMP
+#include "ctpl_stl.h"
 
 namespace PoissonRecon
 {
 	struct ThreadPool
 	{
+                static ctpl::thread_pool p;
 		enum ParallelType
 		{
 #ifdef _OPENMP
 			OPEN_MP ,
 #endif // _OPENMP
 			ASYNC ,
-			NONE
+			NONE ,
+			STD_THREAD
 		};
 		static const std::vector< std::string > ParallelNames;
 
@@ -66,8 +70,11 @@ namespace PoissonRecon
 		template< typename Function , typename ... Functions >
 		static void ParallelSections( const Function &function , const Functions & ... functions )
 		{
-			if( ThreadPool::ParallelizationType==ThreadPool::ParallelType::NONE)
+			if( ThreadPool::ParallelizationType==ThreadPool::ParallelType::NONE || ThreadPool::ParallelizationType==ThreadPool::ParallelType::STD_THREAD )
 			{
+                            //std::cout << "##################################################" << std::endl;
+                            //std::cout << "Ignoring std::thread !!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
+                            //std::cout << "##################################################" << std::endl;
 				if constexpr( sizeof ... (Functions) )
 				{
 					_SerialSections( functions... );
@@ -90,8 +97,11 @@ namespace PoissonRecon
 		template< typename Function , typename ... Functions >
 		static void ParallelSections( const Function &&function , const Functions && ... functions )
 		{
-			if( ThreadPool::ParallelizationType==ThreadPool::ParallelType::NONE)
+			if( ThreadPool::ParallelizationType==ThreadPool::ParallelType::NONE || ThreadPool::ParallelizationType==ThreadPool::ParallelType::STD_THREAD )
 			{
+                            //std::cout << "##################################################" << std::endl;
+                            //std::cout << "Ignoring std::thread !!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
+                            //std::cout << "##################################################" << std::endl;
 				if constexpr( sizeof ... (Functions) )
 				{
 					_SerialSections( functions... );
@@ -168,11 +178,24 @@ namespace PoissonRecon
 #endif // _OPENMP
 			else if( pType==ParallelType::ASYNC )
 			{
+                            //std::cout << "ASYNC" << std::endl;
 				static std::vector< std::future< void > > futures;
 				futures.resize( numThreads-1 );
 				for( unsigned int t=1 ; t<numThreads ; t++ ) futures[t-1] = std::async( std::launch::async , ThreadFunction , t );
 				ThreadFunction( 0 );
 				for( unsigned int t=1 ; t<numThreads ; t++ ) futures[t-1].get();
+			}
+			else if( pType==ParallelType::STD_THREAD )
+			{
+				static std::vector< std::future< void > > futures;
+				futures.resize( numThreads-1 );
+                                for(size_t t=1;t<numThreads;t++){
+                                    futures[t-1] = p.push([ThreadFunction,t](int id) {
+                                        ThreadFunction(t);
+                                    });
+                                }
+                                ThreadFunction(0);
+				for( unsigned int t=1 ; t<numThreads ; t++ ) futures[t-1].wait();
 			}
 		}
 
@@ -208,7 +231,7 @@ namespace PoissonRecon
 
 	inline ThreadPool::ParallelType ThreadPool::ParallelizationType = ThreadPool::ParallelType::NONE;
 #ifdef __EMSCRIPTEN__
-	inline unsigned int ThreadPool::_NumThreads = 4;
+	inline unsigned int ThreadPool::_NumThreads = 8;
 #else
 	inline unsigned int ThreadPool::_NumThreads = std::thread::hardware_concurrency();
 #endif

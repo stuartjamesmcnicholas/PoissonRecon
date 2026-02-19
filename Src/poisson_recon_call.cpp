@@ -15,7 +15,7 @@ int main(int argc, char *argv[]){
     std::string str = buffer.str();
     std::cout << str.size() << std::endl;
 
-    std::string output = PoissonReconMain(str, false);
+    std::string output = PoissonReconMain(str, true);
     std::ofstream ofile(argv[2]);
     ofile << output;
 
