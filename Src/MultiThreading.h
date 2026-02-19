@@ -70,11 +70,8 @@ namespace PoissonRecon
 		template< typename Function , typename ... Functions >
 		static void ParallelSections( const Function &function , const Functions & ... functions )
 		{
-			if( ThreadPool::ParallelizationType==ThreadPool::ParallelType::NONE || ThreadPool::ParallelizationType==ThreadPool::ParallelType::STD_THREAD )
+			if( ThreadPool::ParallelizationType==ThreadPool::ParallelType::NONE )
 			{
-                            //std::cout << "##################################################" << std::endl;
-                            //std::cout << "Ignoring std::thread !!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
-                            //std::cout << "##################################################" << std::endl;
 				if constexpr( sizeof ... (Functions) )
 				{
 					_SerialSections( functions... );
@@ -87,7 +84,10 @@ namespace PoissonRecon
 				if constexpr( sizeof ... (Functions) )
 				{
 					futures.reserve( sizeof...(Functions) );
-					_ParallelSections( futures , functions... );
+                                        if(ThreadPool::ParallelizationType==ThreadPool::ParallelType::STD_THREAD)
+					        _ParallelSectionsCPTL( futures , functions... );
+                                        else
+					        _ParallelSections( futures , functions... );
 				}
 				function();
 				for( unsigned int i=0 ; i<futures.size() ; i++ ) futures[i].get();
@@ -97,11 +97,8 @@ namespace PoissonRecon
 		template< typename Function , typename ... Functions >
 		static void ParallelSections( const Function &&function , const Functions && ... functions )
 		{
-			if( ThreadPool::ParallelizationType==ThreadPool::ParallelType::NONE || ThreadPool::ParallelizationType==ThreadPool::ParallelType::STD_THREAD )
+			if( ThreadPool::ParallelizationType==ThreadPool::ParallelType::NONE )
 			{
-                            //std::cout << "##################################################" << std::endl;
-                            //std::cout << "Ignoring std::thread !!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
-                            //std::cout << "##################################################" << std::endl;
 				if constexpr( sizeof ... (Functions) )
 				{
 					_SerialSections( functions... );
@@ -114,7 +111,10 @@ namespace PoissonRecon
 				if constexpr( sizeof ... (Functions) )
 				{
 					futures.reserve( sizeof...(Functions) );
-					_ParallelSections( futures , std::move(functions)... );
+                                        if(ThreadPool::ParallelizationType==ThreadPool::ParallelType::STD_THREAD)
+					        _ParallelSectionsCPTL( futures , std::move(functions)... );
+                                        else
+					        _ParallelSections( futures , std::move(functions)... );
 				}
 				function();
 				for( unsigned int i=0 ; i<futures.size() ; i++ ) futures[i].get();
@@ -209,6 +209,13 @@ namespace PoissonRecon
 			if constexpr( sizeof...(Functions) ) _SerialSections(functions... );
 		}
 		template< typename Function , typename ... Functions >
+		static void _ParallelSectionsCPTL( std::vector< std::future< void > > &futures , const Function &function , const Functions & ... functions )
+		{
+			futures.push_back( p.push([function](int id) { function(); }) );
+			if constexpr( sizeof...(Functions) ) _ParallelSectionsCPTL( futures , functions... );
+		}
+
+		template< typename Function , typename ... Functions >
 		static void _ParallelSections( std::vector< std::future< void > > &futures , const Function &function , const Functions & ... functions )
 		{
 			futures.push_back( std::async( std::launch::async , function ) );
@@ -220,6 +227,12 @@ namespace PoissonRecon
 		{
 			function();
 			if constexpr( sizeof...(Functions) ) _SerialSections(functions... );
+		}
+		template< typename Function , typename ... Functions >
+		static void _ParallelSectionsCPTL( std::vector< std::future< void > > &futures , const Function &&function , const Functions && ... functions )
+		{
+			futures.push_back( p.push([function](int id) { function(); }) );
+			if constexpr( sizeof...(Functions) ) _ParallelSectionsCPTL( futures , std::move(functions)... );
 		}
 		template< typename Function , typename ... Functions >
 		static void _ParallelSections( std::vector< std::future< void > > &futures , const Function &&function , const Functions && ... functions )
