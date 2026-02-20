@@ -1754,6 +1754,7 @@ public:
 		if( averageRoot<=0 || averageRoot>=1 )
 		{
 			_BadRootCount++;
+			MK_WARN( "bad root? " , averageRoot );
 			if( averageRoot<0 ) averageRoot = 0;
 			if( averageRoot>1 ) averageRoot = 1;
 		}
@@ -1865,6 +1866,7 @@ public:
 		if( averageRoot<=0 || averageRoot>=1 )
 		{
 			_BadRootCount++;
+			MK_WARN( "bad root? " , averageRoot );
 			if( averageRoot<0 ) averageRoot = 0;
 			if( averageRoot>1 ) averageRoot = 1;
 		}

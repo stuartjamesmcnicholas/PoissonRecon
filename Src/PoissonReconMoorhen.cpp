@@ -605,8 +605,11 @@ std::string PoissonReconMain( const std::string &_input, bool doParallel )
 	if( MaxMemoryGB.value>0 ) SetPeakMemoryMB( MaxMemoryGB.value<<10 );
 	ThreadPool::ChunkSize = ThreadChunkSize.value;
 	ThreadPool::Schedule = (ThreadPool::ScheduleType)ScheduleType.value;
-	ThreadPool::ParallelizationType= (ThreadPool::ParallelType)ParallelType.value;
-	ThreadPool::ParallelizationType= ThreadPool::ParallelType::STD_THREAD;
+        if(doParallel){
+	    ThreadPool::ParallelizationType= ThreadPool::ParallelType::CTPL;
+        } else {
+	    ThreadPool::ParallelizationType= ThreadPool::ParallelType::NONE;
+        }
 
 	if( !In.set )
 	{
